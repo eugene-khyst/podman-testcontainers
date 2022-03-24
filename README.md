@@ -3,15 +3,19 @@
 - [What is Testcontainers](#12282a77ac3d643b9aab1cd2b5a9d890)
 - [Why replace Docker with Podman?](#91e6b8d6653cf3b608a92a82a0b936a4)
 - [Install Podman](#47e011156251a64be7e2f051a619bdf8)
-    - [Linux](#edc9f0a5a5d57797bf68e37364743831)
-        - [Ubuntu 20.04](#73611f9a837b7a25dad3a9c5d1a98658)
-        - [Ubuntu 20.10 and newer](#5222cd09a77e66bf72fbeffe66ec0212)
-    - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
+  - [Linux](#edc9f0a5a5d57797bf68e37364743831)
+    - [Ubuntu 20.04](#73611f9a837b7a25dad3a9c5d1a98658)
+    - [Ubuntu 20.10 and newer](#5222cd09a77e66bf72fbeffe66ec0212)
+  - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
 - [Verify that Podman is installed correctly](#baaa758ba23f3fdec680766b40707565)
 - [Enable the Podman service](#a9364df70e9d77df7fac335dce5ced5b)
+  - [Linux](#edc9f0a5a5d57797bf68e37364743831)
+  - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
+- [Configure Testcontainers](#d89feac68a3eb643016f11dfcd94b140)
+  - [Configure Gradle build script](#d14135edb01159774783955777870263)
+  - [Permanently set the environment variables](#0a8ed05f3026bc50c1b300f871bfc501)
     - [Linux](#edc9f0a5a5d57797bf68e37364743831)
     - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
-- [Configure Graldle build script](#df9e8b308e46c444c10a2341aee0c2e7)
 - [Create a base test class](#ea52478914f0bb02dcec80d5d34aea4b)
 - [Implement test classes](#c4a8219764d12a6b9e080181577545d7)
 
@@ -185,7 +189,13 @@ podman-sock
 
 Make sure SSH tunnel is open before executing tests using Testcontainers.
 
-## <a id="df9e8b308e46c444c10a2341aee0c2e7"></a>Configure Graldle build script
+## <a id="d89feac68a3eb643016f11dfcd94b140"></a>Configure Testcontainers
+
+Testcontainers library loads configuration from multiple locations, including environment variables.
+
+### <a id="d14135edb01159774783955777870263"></a>Configure Gradle build script
+
+I recommended configuring Testcontainers in a Gradle build script.
 
 [`build.gradle`](build.gradle)
 
@@ -215,6 +225,28 @@ will explicitly remove containers with a JVM shutdown hook:
 
 ```java
 Runtime.getRuntime().addShutdownHook(new Thread(container::stop));
+```
+
+### <a id="0a8ed05f3026bc50c1b300f871bfc501"></a>Permanently set the environment variables
+
+Alternatively to configuring Testcontainers in a Gradle build script, you can permanently set the environment variables.
+
+#### <a id="edc9f0a5a5d57797bf68e37364743831"></a>Linux
+
+`~/.profile` or `~/.bash_profile`
+
+```bash
+export DOCKER_HOST="unix:///run/user/$UID/podman/podman.sock"
+export TESTCONTAINERS_RYUK_DISABLED="true"
+```
+
+#### <a id="0a5b7edb55b772c60bfa8af868b679cf"></a>MacOS
+
+`~/.zprofile`
+
+```bash
+export DOCKER_HOST="unix:///tmp/podman.sock"
+export TESTCONTAINERS_RYUK_DISABLED="true"
 ```
 
 ## <a id="ea52478914f0bb02dcec80d5d34aea4b"></a>Create a base test class
