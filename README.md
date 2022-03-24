@@ -174,20 +174,20 @@ Install [jq](https://stedolan.github.io/jq/) to parse JSON:
 brew install jq
 ```
 
-Create a shell alias to forward local socket `/tmp/podman.sock` to remote socket `/run/user/1000/podman/podman.sock`:
+Create a shell alias to forward the local socket `/tmp/podman.sock` to the remote socket `/run/user/1000/podman/podman.sock`:
 
 ```bash
 echo "alias podman-sock=\"rm -f /tmp/podman.sock && ssh -i ~/.ssh/podman-machine-default -p \$(podman system connection list --format=json | jq '.[0].URI' | sed -E 's|.+://.+@.+:([[:digit:]]+)/.+|\1|') -L'/tmp/podman.sock:/run/user/1000/podman/podman.sock' -N core@localhost\"" >> ~/.zprofile
 source ~/.zprofile
 ```
 
-Open SSH tunnel:
+Open an SSH tunnel:
 
 ```bash
 podman-sock
 ```
 
-Make sure SSH tunnel is open before executing tests using Testcontainers.
+Make sure the SSH tunnel is open before executing tests using Testcontainers.
 
 ## <a id="d89feac68a3eb643016f11dfcd94b140"></a>Configure Testcontainers
 
@@ -220,7 +220,7 @@ Disable Ryuk with the environment variable `TESTCONTAINERS_RYUK_DISABLED`.
 
 Ryuk is a technology for Docker and doesn't support Podman. See https://github.com/testcontainers/moby-ryuk/issues/23
 
-Testcontainers library uses Ruyk to remove containers. Instead of relying on Ryuk to remove implicitly containers, we
+Testcontainers library uses Ruyk to remove containers. Instead of relying on Ryuk to implicitly remove containers, we
 will explicitly remove containers with a JVM shutdown hook:
 
 ```java
@@ -258,7 +258,7 @@ Containers should be JVM singletons and not a Spring singletons. Sometimes Sprin
 context, for example
 when [`@MockBean`](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/mock/mockito/MockBean.html)
 or [`@DirtiesContext`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/annotation/DirtiesContext.html)
-are used. This means you get multiple Spring contexts in tests.
+are used. This means you get multiple Spring contexts in integration tests.
 
 Testcontainers library supports singleton containers pattern.
 See https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers
