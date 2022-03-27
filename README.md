@@ -13,7 +13,7 @@
   - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
 - [Configure Testcontainers](#d89feac68a3eb643016f11dfcd94b140)
   - [Configure Gradle build script](#d14135edb01159774783955777870263)
-  - [Permanently set the environment variables](#0a8ed05f3026bc50c1b300f871bfc501)
+  - [Pass the environment variables](#43f8dd6e4a0df1613f6a6eadf4e72a33)
     - [Linux](#edc9f0a5a5d57797bf68e37364743831)
     - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
 - [Create a base test class](#ea52478914f0bb02dcec80d5d34aea4b)
@@ -227,26 +227,24 @@ will explicitly remove containers with a JVM shutdown hook:
 Runtime.getRuntime().addShutdownHook(new Thread(container::stop));
 ```
 
-### <a id="0a8ed05f3026bc50c1b300f871bfc501"></a>Permanently set the environment variables
+### <a id="43f8dd6e4a0df1613f6a6eadf4e72a33"></a>Pass the environment variables
 
-Alternatively to configuring Testcontainers in a Gradle build script, you can permanently set the environment variables.
+As an alternative to configuring Testcontainers in a Gradle build script, you can pass the environment variables to Gradle.
 
 #### <a id="edc9f0a5a5d57797bf68e37364743831"></a>Linux
 
-`~/.profile` or `~/.bash_profile`
-
 ```bash
-export DOCKER_HOST="unix:///run/user/$UID/podman/podman.sock"
-export TESTCONTAINERS_RYUK_DISABLED="true"
+DOCKER_HOST="unix:///run/user/$UID/podman/podman.sock" \
+TESTCONTAINERS_RYUK_DISABLED="true" \
+./gradlew clean build -i
 ```
 
 #### <a id="0a5b7edb55b772c60bfa8af868b679cf"></a>MacOS
 
-`~/.zprofile`
-
 ```bash
-export DOCKER_HOST="unix:///tmp/podman.sock"
-export TESTCONTAINERS_RYUK_DISABLED="true"
+DOCKER_HOST="unix:///tmp/podman.sock" \
+TESTCONTAINERS_RYUK_DISABLED="true" \
+./gradlew clean build -i
 ```
 
 ## <a id="ea52478914f0bb02dcec80d5d34aea4b"></a>Create a base test class
