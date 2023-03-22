@@ -1,34 +1,34 @@
-# Testcontainers with Podman
+# <a id="0"></a>Testcontainers with Podman
 
-- [What is Testcontainers](#12282a77ac3d643b9aab1cd2b5a9d890)
-- [Why replace Docker with Podman?](#91e6b8d6653cf3b608a92a82a0b936a4)
-- [Install Podman](#47e011156251a64be7e2f051a619bdf8)
-  - [Linux](#edc9f0a5a5d57797bf68e37364743831)
-    - [Ubuntu 20.04](#73611f9a837b7a25dad3a9c5d1a98658)
-    - [Ubuntu 20.10 and newer](#5222cd09a77e66bf72fbeffe66ec0212)
-  - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
-- [Verify that Podman is installed correctly](#baaa758ba23f3fdec680766b40707565)
-- [Enable the Podman service](#a9364df70e9d77df7fac335dce5ced5b)
-  - [Linux](#edc9f0a5a5d57797bf68e37364743831)
-  - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
-- [Configure Testcontainers](#d89feac68a3eb643016f11dfcd94b140)
-  - [Configure Gradle build script](#d14135edb01159774783955777870263)
-  - [Pass the environment variables](#43f8dd6e4a0df1613f6a6eadf4e72a33)
-    - [Linux](#edc9f0a5a5d57797bf68e37364743831)
-    - [MacOS](#0a5b7edb55b772c60bfa8af868b679cf)
-- [Create a base test class](#ea52478914f0bb02dcec80d5d34aea4b)
-- [Implement test classes](#c4a8219764d12a6b9e080181577545d7)
+- [What is Testcontainers](#1)
+- [Why replace Docker with Podman?](#2)
+- [Install Podman](#3)
+  - [Linux](#3-1)
+    - [Ubuntu 20.04](#3-1-1)
+    - [Ubuntu 20.10 and newer](#3-1-2)
+  - [MacOS](#3-2)
+- [Verify that Podman is installed correctly](#4)
+- [Enable the Podman service](#5)
+  - [Linux](#5-1)
+  - [MacOS](#5-2)
+- [Configure Testcontainers](#6)
+  - [Configure Gradle build script](#6-1)
+  - [Pass the environment variables](#6-2)
+    - [Linux](#6-2-1)
+    - [MacOS](#6-2-2)
+- [Create a base test class](#7)
+- [Implement test classes](#8)
 
 <!-- Table of contents is made with https://github.com/evgeniy-khist/markdown-toc -->
 
-## <a id="12282a77ac3d643b9aab1cd2b5a9d890"></a>What is Testcontainers
+## <a id="1"></a>What is Testcontainers
 
 > [Testcontainers](https://www.testcontainers.org/) is a Java library that supports JUnit tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.
 
 With Testcontainers, your JUnit tests can use PostgreSQL to run in a Docker container instead of an embedded H2
 Database.
 
-## <a id="91e6b8d6653cf3b608a92a82a0b936a4"></a>Why replace Docker with Podman?
+## <a id="2"></a>Why replace Docker with Podman?
 
 Docker changed the Docker Desktop terms in 2021. Docker Desktop is not free for everyone anymore:
 
@@ -47,13 +47,13 @@ the [containers](https://github.com/containers) organization.
 This example shows how to use Podman with [Testcontainers](https://www.testcontainers.org/) in Java projects that use
 Gradle on Ubuntu Linux and MacOS (both x86_64 and Apple silicon).
 
-## <a id="47e011156251a64be7e2f051a619bdf8"></a>Install Podman
+## <a id="3"></a>Install Podman
 
-### <a id="edc9f0a5a5d57797bf68e37364743831"></a>Linux
+### <a id="3-1"></a>Linux
 
 See https://podman.io/getting-started/installation#linux-distributions
 
-#### <a id="73611f9a837b7a25dad3a9c5d1a98658"></a>Ubuntu 20.04
+#### <a id="3-1-1"></a>Ubuntu 20.04
 
 Set up the **stable** repository and install the podman package:
 
@@ -72,7 +72,7 @@ Verify the installation:
 podman info
 ```
 
-#### <a id="5222cd09a77e66bf72fbeffe66ec0212"></a>Ubuntu 20.10 and newer
+#### <a id="3-1-2"></a>Ubuntu 20.10 and newer
 
 The podman package is available in the official repositories for Ubuntu 20.10 and newer.
 
@@ -89,7 +89,7 @@ Verify the installation:
 podman info
 ```
 
-### <a id="0a5b7edb55b772c60bfa8af868b679cf"></a>MacOS
+### <a id="3-2"></a>MacOS
 
 See https://podman.io/getting-started/installation#macos
 
@@ -115,7 +115,7 @@ Verify the installation:
 podman info
 ```
 
-## <a id="baaa758ba23f3fdec680766b40707565"></a>Verify that Podman is installed correctly
+## <a id="4"></a>Verify that Podman is installed correctly
 
 Run the `busybox` or other image to verify that Podman is installed correctly:
 
@@ -137,11 +137,11 @@ echo "unqualified-search-registries = [\"docker.io\"]" | sudo tee -a /etc/contai
 
 See https://www.redhat.com/sysadmin/container-image-short-names
 
-## <a id="a9364df70e9d77df7fac335dce5ced5b"></a>Enable the Podman service
+## <a id="5"></a>Enable the Podman service
 
 Testcontainers library communicates with Podman using socket file.
 
-### <a id="edc9f0a5a5d57797bf68e37364743831"></a>Linux
+### <a id="5-1"></a>Linux
 
 Start Podman service for a regular user (rootless) and make it listen to a socket:
 
@@ -161,7 +161,7 @@ Check the socket file exists:
 ls -la /run/user/$UID/podman/podman.sock
 ```
 
-### <a id="0a5b7edb55b772c60bfa8af868b679cf"></a>MacOS
+### <a id="5-2"></a>MacOS
 
 Podman socket file `/run/user/1000/podman/podman.sock` can be found inside the Podman-managed Linux VM. A local socket
 on MacOS can be forwarded to a remote socket on Podman-managed VM using SSH tunneling.
@@ -189,11 +189,11 @@ podman-sock
 
 Make sure the SSH tunnel is open before executing tests using Testcontainers.
 
-## <a id="d89feac68a3eb643016f11dfcd94b140"></a>Configure Testcontainers
+## <a id="6"></a>Configure Testcontainers
 
 Testcontainers library loads configuration from multiple locations, including environment variables.
 
-### <a id="d14135edb01159774783955777870263"></a>Configure Gradle build script
+### <a id="6-1"></a>Configure Gradle build script
 
 I recommended configuring Testcontainers in a Gradle build script.
 
@@ -227,11 +227,11 @@ will explicitly remove containers with a JVM shutdown hook:
 Runtime.getRuntime().addShutdownHook(new Thread(container::stop));
 ```
 
-### <a id="43f8dd6e4a0df1613f6a6eadf4e72a33"></a>Pass the environment variables
+### <a id="6-2"></a>Pass the environment variables
 
 As an alternative to configuring Testcontainers in a Gradle build script, you can pass the environment variables to Gradle.
 
-#### <a id="edc9f0a5a5d57797bf68e37364743831"></a>Linux
+#### <a id="6-2-1"></a>Linux
 
 ```bash
 DOCKER_HOST="unix:///run/user/$UID/podman/podman.sock" \
@@ -239,7 +239,7 @@ TESTCONTAINERS_RYUK_DISABLED="true" \
 ./gradlew clean build -i
 ```
 
-#### <a id="0a5b7edb55b772c60bfa8af868b679cf"></a>MacOS
+#### <a id="6-2-2"></a>MacOS
 
 ```bash
 DOCKER_HOST="unix:///tmp/podman.sock" \
@@ -247,7 +247,7 @@ TESTCONTAINERS_RYUK_DISABLED="true" \
 ./gradlew clean build -i
 ```
 
-## <a id="ea52478914f0bb02dcec80d5d34aea4b"></a>Create a base test class
+## <a id="7"></a>Create a base test class
 
 It is useful to define a container that is only started once for all (or several) test classes. Starting a database
 container for each test class is a big overhead.
@@ -332,7 +332,7 @@ container.
 annotation and its supporting infrastructure allows properties from Testcontainers based tests to be exposed easily to
 Spring integration tests.
 
-## <a id="c4a8219764d12a6b9e080181577545d7"></a>Implement test classes
+## <a id="8"></a>Implement test classes
 
 Implement test classes by inheriting the base
 class [`BaseIntegrationTest.java`](src/test/java/com/example/podman/testcontainers/BaseIntegrationTest.java).
